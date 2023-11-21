@@ -4,6 +4,10 @@ from myApp import serializers
 from myApp.models import Table1
 from django.http import JsonResponse
 from google.cloud import bigquery
+from django.core.paginator import Paginator
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
+
 
 def consultar_bigquery(request):
     try:
@@ -20,8 +24,11 @@ def consultar_bigquery(request):
             """
 
         client = bigquery.Client()
-        
         query_job = client.query(query)
+
+        result_list = list(query_job.result())
+        print('Cantidad de resultados:', len(result_list))
+
         results = [dict(row) for row in query_job.result()]
 
         return JsonResponse(results, safe=False)

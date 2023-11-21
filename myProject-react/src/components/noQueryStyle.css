@@ -1,0 +1,15 @@
+.no-query-container {
+    display: flex;
+    align-items: center;
+    justify-content: baseline;
+    height: 100vh; /* Asegura que el contenedor ocupe el 100% de la altura de la ventana */
+    margin-left: 150%;
+  }
+  
+  .no-query {
+    text-align: justify;
+    white-space: nowrap;
+    padding: 20px;
+    background-color: #f2f2f2;
+    color: #666666;
+  }

@@ -1,1 +1,14 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
+
+.border-section {
+  border-right: 1px solid black;
+}
+
+.left-section {
+  float: left;
+  height: 100vh;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
