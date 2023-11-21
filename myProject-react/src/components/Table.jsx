@@ -1,7 +1,7 @@
 import './TableStyle.css';
 
 function Table({queryResults}){
-  return (
+  return (//builds the table results
     <table className="styled-table">
       <thead>
         <tr>

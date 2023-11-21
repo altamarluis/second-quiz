@@ -6,10 +6,11 @@ import './Table1Styles.css';
 
 function Table1(){
 
+  // State to manage query results
   const [queryResults, setQueryResults] = useState([]);
 
-  // Parametros de consulta
-  const [countryName, setCountryName] = useState(''); // Define los estados para tus parámetros
+  // Query parameters state
+  const [countryName, setCountryName] = useState('');
   const [educationLevel, setEducationLevel] = useState('');
   const [experience, setExperience] = useState('');
   const [yearMin, setYearMin] = useState(0);
@@ -17,19 +18,20 @@ function Table1(){
   const [user, setUser] = useState('');
   const [coment, setComent] = useState('');
   const [indicator, setIndicator] = useState('');
+  const [nombreConsulta, setNombreConsulta] = useState('');
+  const [queryMessage, setQueryMessage] = useState('Realiza la consulta')
 
-  const handleSubmit = (e) => {
+  // State for query historys
+  const [historialActive, setHistorialActive] = useState(false);
+  const [queryHistoryResults, setQueryHistoryResults] = useState([]);
 
-    // Para evitar cargar la página al enviar el formulario
-    //e.preventDefault();
+  // Function to handle form submission and execute the query
+  const handleSubmit = () => {
+    setQueryMessage('Cargando Consulta');
+    setHistorialActive(false);
 
-    // Construir la consulta dinámicamente con los parámetros
-    //const query = `SELECT * FROM bigquery-public-data.world_bank_intl_education.international_education WHERE indicator_code = '${parametro1}'AND year = '${numeroParametro2}' LIMIT 10`;
-
-    // Se usa el símbolo % para indicar que se debe buscar el texto en cualquier parte del campo en la consulta, quitar de requerirse
-    // Si la forma de consulta no funciona cambiarla de alguna manera
+    // Construct dynamic query based on user inputs
     var indicatorName = 'Annual statutory teacher salaries in public institutions in USD';
-
     if (educationLevel != '' && experience != '') {
       indicatorName = indicatorName + '. ' + educationLevel + '. ' + experience;
     } else if (educationLevel != '') {
@@ -37,27 +39,31 @@ function Table1(){
     } else if (experience != '') {
       indicatorName = indicatorName + '. ' + experience;
     }
-
     setIndicator(indicatorName.valueOf());
-
+  
+    // Construct BigQuery SQL-like query
     const query = `
     SELECT country_name AS country, country_code AS code, indicator_name AS indicator, year AS year, value AS value
     FROM bigquery-public-data.world_bank_intl_education.international_education
     WHERE country_name = '${countryName}'
-    AND indicator_name = '${indicatorName}'
+    AND indicator_name = '${indicator}'
     AND year BETWEEN ${yearMin} AND ${yearMax}
     ORDER BY year
     `;
+
+    // Send query to the backend API
     axios.get(`http://localhost:8000/api/test/?query=${encodeURIComponent(query)}`)
-        .then(response => setQueryResults(response.data))
+        .then(response => {
+          setQueryResults(response.data);
+          if(queryResults.length <=0 ){setQueryMessage('Sin Resultados')}
+        })
         .catch(error => console.error('Error:', error));
-    console.log("resultado", queryResults);
   }
 
+  // Function to save the current query
   const handleSave = () => {
-
     axios.post(`http://localhost:8000/api/myApp/`, {
-       title: 'no title',
+       title: nombreConsulta,
        user: user,
        comments: coment,
        country: countryName,
@@ -67,13 +73,49 @@ function Table1(){
      })
      .then(function (response) {
        console.log(response);
-       alert('Consulta guardada');
+       alert('Consulta guardada'); // Display alert on successful query save
      })
      .catch(function (error) {
        console.log(error);
      });
   }
 
+  // Function to handle the click event on the "Historial" button
+  const historialButtonAction = () => {
+    axios.get(`http://localhost:8000/api/myApp/`)
+        .then(response => setQueryHistoryResults(response.data))
+        .catch(error => console.error('Error:', error));
+    setHistorialActive(true); // Enable query history display
+    console.log('presionar');
+}
+
+  // Function to handle historical query
+  const handleHistoryConsult = (rowData) => {
+    setQueryMessage('Cargando Consulta'); // Display loading message
+    setQueryResults([]);
+    setHistorialActive(false); // Disable query history
+
+    // Construct historical query based on selected row data
+    const query2 = `
+    SELECT country_name AS country, country_code AS code, indicator_name AS indicator, year AS year, value AS value
+    FROM bigquery-public-data.world_bank_intl_education.international_education
+    WHERE country_name = '${rowData.country}'
+    AND indicator_name = '${rowData.indicator}'
+    AND year BETWEEN ${rowData.yearmin} AND ${rowData.yearmax}
+    ORDER BY year
+    `;
+
+    // Send historical query to the backend API
+    axios.get(`http://localhost:8000/api/test/?query=${encodeURIComponent(query2)}`)
+        .then(response => {
+          setQueryResults(response.data);
+          if(queryResults.length <=0 ){setQueryMessage('Sin Resultados')} // Display message if no results
+        })
+        .catch(error => console.error('Error:', error));
+    
+  }
+
+  // Render the UI components
   return(
     <div className='row'>
       <div className='row col-4 left-section overflow-scroll position-fixed'>
@@ -96,13 +138,21 @@ function Table1(){
             coment={coment}
             setComent={setComent}
             handleSave={handleSave}
+            setHistorialActive={setHistorialActive}
+            nombreConsulta={nombreConsulta}
+            setNombreConsulta={setNombreConsulta}
+            historialButtonAction={historialButtonAction}
           />
 
         </div>
       </div>
       <div className='col-8 margen mt-4'>
-          <Results 
+          <Results
             queryResults={queryResults}
+            historialActive={historialActive}
+            queryHistoryResults={queryHistoryResults}
+            handleHistoryConsult={handleHistoryConsult}
+            queryMessage={queryMessage}
           />
         </div>
     </div>

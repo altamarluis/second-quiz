@@ -11,6 +11,8 @@ import {
     Filler,
 } from 'chart.js';
 
+// linechart builder
+
 chartjs.register(
     CategoryScale,
     LinearScale,
@@ -21,12 +23,16 @@ chartjs.register(
     Legend,
     Filler
 );
+
+// graph axes
 var values = [];
 var years = [];
 
+//graph options
 var myoptions = {
-
 };
+
+
 export default function LineChart({ queryResults }){
     console.log(queryResults);
     values = [];
@@ -38,7 +44,7 @@ export default function LineChart({ queryResults }){
 
     var midata = {
         labels: years,
-        datasets: [ //Cada una de las lineas del grafico
+        datasets: [ //Each of the lines of the graph
         {
             label: 'USD',
             data: values,
