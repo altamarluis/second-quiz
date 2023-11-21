@@ -19,7 +19,7 @@ env = environ.Env()
 environ.Env.read_env()
 
 #path a la api
-os.environ['GOOGLE_APPLICATION_CREDENTIALS']='C:\\Users\\altam\Desktop\Repositories\second-quiz\myProject\secret\diesel-aegis-404619-8c57715404ec.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS']= 'C:\\Users\\altam\\Desktop\\Repositories\\second-quiz\\myProject\\secret\\diesel-aegis-404619-8c57715404ec.json'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -31,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -141,5 +141,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
+    "http://localhost:9000",
+    "https://localhost:9000",
+
 ]

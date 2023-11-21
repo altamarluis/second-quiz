@@ -1,0 +1,31 @@
+version: '3'
+services:
+  frontend:
+    image: react-image
+    ports:
+      - "9000:9000"  # Adjust the port if needed
+    expose:
+      - "9000"
+    depends_on:
+      - backend
+  backend:
+    image: django-image
+    ports:
+      - "8000:8000"  # Adjust the port if needed
+    env_file:
+      - ./myProject/myProject/.env 
+    depends_on:
+      - database
+  database:
+    image: postgres:latest
+    environment:
+      - POSTGRES_NAME=dbMine
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_HOST=127.0.0.1
+      - POSTGRES_PORT=5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

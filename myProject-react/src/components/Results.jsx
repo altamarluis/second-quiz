@@ -1,5 +1,4 @@
 import { Table } from '../components/Table.jsx';
-import { Graphic } from './Graphic.jsx';
 import { NoQuery } from './NoQuery.jsx';
 import LineChart from './LineChart.jsx';
 import { HistorySet } from './HistorySet.jsx';
